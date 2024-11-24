@@ -208,6 +208,39 @@ public class ClothRepository {
 
         return outfits;
     }
+    public List<Map<String, Object>> getOutfitsByDate(String date) {
+        String sql = """
+        SELECT o.id AS outfit_id, o.name AS outfit_name, c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
+        FROM outfits o
+        JOIN outfit_clothes oc ON o.id = oc.outfit_id
+        JOIN clothes c ON oc.cloth_id = c.id
+        WHERE o.start_date = ?
+    """;
+
+        List<Map<String, Object>> outfits = new ArrayList<>();
+
+        try (Connection connection = DatabaseUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, date);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Map<String, Object> outfit = new HashMap<>();
+                    outfit.put("outfit_id", resultSet.getInt("outfit_id"));
+                    outfit.put("outfit_name", resultSet.getString("outfit_name"));
+                    outfit.put("cloth_id", resultSet.getInt("cloth_id"));
+                    outfit.put("cloth_name", resultSet.getString("cloth_name"));
+                    outfit.put("imageUrl", resultSet.getString("imageUrl"));
+                    outfits.add(outfit);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("코디 조회 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return outfits;
+    }
+
 
 
 

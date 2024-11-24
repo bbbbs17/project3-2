@@ -32,7 +32,14 @@
 </head>
 <body>
 <div class="container py-4">
-    <h1 class="mb-4 text-center">ootd 달력</h1>
+    <!-- 헤더 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- 홈 버튼 -->
+        <a href="welcome.jsp" class="btn btn-secondary btn-lg">홈으로</a>
+        <h1 class="text-center flex-grow-1">ootd 달력</h1>
+        <!-- 나의 옷장 보기 버튼 -->
+        <a href="myItems.jsp" class="btn btn-primary btn-lg">나의 옷장 보기</a>
+    </div>
 
     <!-- 새 코디 추가 버튼 -->
     <div class="mb-4 text-end">
@@ -92,13 +99,21 @@
                 <%
                     }
                 %>
-            ]
+            ],
+            dateClick: function (info) {
+                // 클릭한 날짜를 가져옵니다.
+                const clickedDate = info.dateStr;
+
+                // 원하는 페이지로 이동 (예: 갤러리 페이지)
+                window.location.href = `viewOutfits.jsp?date=${clickedDate}`;
+            }
         });
 
         console.log('Rendering FullCalendar...');
         calendar.render();
         console.log('FullCalendar rendered successfully.');
     });
+
 </script>
 
 </body>

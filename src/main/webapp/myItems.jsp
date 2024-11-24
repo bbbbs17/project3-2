@@ -46,6 +46,11 @@
         </div>
     </div>
 
+    <!-- 추가된 ootd(달력) 보러가기 버튼 -->
+    <div class="text-end mb-4">
+        <a href="myOutfits.jsp" class="btn btn-info btn-lg">ootd(달력) 보러가기</a>
+    </div>
+
     <!-- 필터 버튼 -->
     <div class="row mb-4">
         <div class="col-md-6">
