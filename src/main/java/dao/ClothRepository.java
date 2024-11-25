@@ -209,6 +209,14 @@ public class ClothRepository {
         return outfits;
     }
     public List<Map<String, Object>> getOutfitsByDate(String date) {
+        List<Map<String, Object>> outfits = new ArrayList<>();
+
+        // 날짜 값 검증
+        if (date == null || date.trim().isEmpty()) {
+            System.out.println("유효하지 않은 날짜 값: " + date);
+            return outfits;
+        }
+
         String sql = """
         SELECT o.id AS outfit_id, o.name AS outfit_name, c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
         FROM outfits o
@@ -217,11 +225,10 @@ public class ClothRepository {
         WHERE o.start_date = ?
     """;
 
-        List<Map<String, Object>> outfits = new ArrayList<>();
-
         try (Connection connection = DatabaseUtil.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, date);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Map<String, Object> outfit = new HashMap<>();
@@ -240,6 +247,7 @@ public class ClothRepository {
 
         return outfits;
     }
+
 
 
 

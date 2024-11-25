@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="dao.ClothRepository" %>
-
+<!DOCTYPE html>
 <html>
 <head>
     <title>나의 코디 - 달력</title>
@@ -20,7 +19,6 @@
             width: 100%;
             height: 200px;
         }
-
         .outfit-card {
             border: 1px solid #ddd;
             border-radius: 10px;
@@ -52,9 +50,15 @@
     <!-- 코디 상세 보기 -->
     <div id="outfitDetails" class="mt-4">
         <%
-            // 코디 데이터를 가져오기
+            // 데이터베이스에서 코디 데이터를 가져오기
             ClothRepository repository = ClothRepository.getInstance();
             List<Map<String, Object>> outfits = repository.getAllOutfits();
+
+            // 디버깅: 콘솔에서 데이터 확인
+            System.out.println("Outfits loaded from database:");
+            for (Map<String, Object> outfit : outfits) {
+                System.out.println(outfit);
+            }
 
             if (outfits.isEmpty()) {
         %>
@@ -70,7 +74,6 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        console.log('Initializing FullCalendar...');
         const calendarEl = document.getElementById('calendar');
 
         if (!calendarEl) {
@@ -80,13 +83,14 @@
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
+            timeZone: 'local',
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             events: [
-                <%-- 이벤트 추가 --%>
+                <%-- JSP에서 데이터베이스에서 가져온 이벤트 데이터 추가 --%>
                 <%
                     for (Map<String, Object> outfit : outfits) {
                         String outfitName = (String) outfit.get("outfit_name");
@@ -100,19 +104,40 @@
                     }
                 %>
             ],
-            dateClick: function (info) {
-                // 클릭한 날짜를 가져옵니다.
-                const clickedDate = info.dateStr;
+            eventClick: function (info) {
+                console.log('Event clicked:', info);
 
-                // 원하는 페이지로 이동 (예: 갤러리 페이지)
-                window.location.href = `viewOutfits.jsp?date=${clickedDate}`;
+                if (!info.event.start) {
+                    console.error('info.event.start is null or undefined.');
+                    return;
+                }
+
+                try {
+                    const clickedDate = new Date(info.event.start);
+
+                    // 템플릿 리터럴 대신 문자열 연결로 날짜 포맷팅
+                    const year = clickedDate.getFullYear();
+                    const month = (clickedDate.getMonth() + 1 < 10 ? '0' : '') + (clickedDate.getMonth() + 1);
+                    const day = (clickedDate.getDate() < 10 ? '0' : '') + clickedDate.getDate();
+
+                    const formattedDate = year + '-' + month + '-' + day;
+
+                    console.log('Formatted date:', formattedDate);
+
+                    if (formattedDate) {
+                        window.location.href = 'viewOutfits.jsp?date=' + formattedDate;
+                    } else {
+                        console.error('Formatted date is invalid or empty.');
+                    }
+                } catch (error) {
+                    console.error('Error while formatting the date:', error);
+                }
             }
         });
 
-        console.log('Rendering FullCalendar...');
         calendar.render();
-        console.log('FullCalendar rendered successfully.');
     });
+
 
 </script>
 
