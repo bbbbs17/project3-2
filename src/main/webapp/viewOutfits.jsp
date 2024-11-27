@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashSet" %>
+<%@ page import="java.util.Set" %>
 <%@ page import="dao.ClothRepository" %>
 <!DOCTYPE html>
 <html>
@@ -17,6 +19,9 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             background-color: #f9f9f9;
+        }
+        .delete-section {
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -57,16 +62,27 @@
     </div>
     <%
     } else {
+        // 중복 제거를 위한 Set 생성
+        Set<Integer> uniqueOutfitIds = new HashSet<>();
     %>
+    <!-- 코디 카드 리스트 -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <%
             // 조회된 코디 데이터를 화면에 출력
             for (Map<String, Object> outfit : outfits) {
+                // id가 null인지 확인하여 처리
+                Object idObject = outfit.get("outfit_id");
+                if (idObject == null) {
+                    System.out.println("Error: 'outfit_id' is null for an outfit!");
+                    continue; // 해당 데이터 건너뜁니다.
+                }
+
+                int outfitId = (int) idObject; // id는 null이 아님
                 String clothName = (String) outfit.get("cloth_name");
                 String imageUrl = (String) outfit.get("imageUrl");
 
                 // 디버깅: 개별 코디 데이터 출력
-                System.out.println("Cloth Name: " + clothName + ", Image URL: " + imageUrl);
+                System.out.println("Outfit ID: " + outfitId + ", Cloth Name: " + clothName + ", Image URL: " + imageUrl);
         %>
         <div class="col">
             <div class="card h-100">
@@ -79,6 +95,35 @@
         <%
             }
         %>
+    </div>
+
+    <!-- 삭제 버튼 영역 -->
+    <div class="delete-section text-center">
+        <form action="deleteOutfit" method="post">
+            <%
+                // 첫 번째 outfitId를 히든 필드로 전송
+                for (Map<String, Object> outfit : outfits) {
+                    Object idObject = outfit.get("outfit_id");
+
+                    if (idObject != null) {
+                        int outfitId = (int) idObject;
+
+                        // 중복된 ID를 무시
+                        if (!uniqueOutfitIds.contains(outfitId)) {
+                            uniqueOutfitIds.add(outfitId);
+            %>
+            <!-- hidden 필드로 outfitId 전송 -->
+            <input type="hidden" name="outfitId" value="<%= outfitId %>">
+            <%
+                            break; // 첫 번째 ID만 사용하고 반복문 종료
+                        }
+                    }
+                }
+            %>
+            <button type="submit" class="btn btn-danger btn-lg mt-3" onclick="return confirm('선택된 코디를 정말 삭제하시겠습니까?');">
+                선택된 코디 삭제
+            </button>
+        </form>
     </div>
     <%
             }
