@@ -124,8 +124,9 @@ public class ClothRepository {
     }
 
     // 코디 추가
-    public void addOutfit(String outfitName, List<Integer> clothIds, String startDate) {
-        String insertOutfitSql = "INSERT INTO outfits (name, start_date) VALUES (?, ?)";
+    // 코디 추가
+    public void addOutfit(String outfitName, List<Integer> clothIds, String startDate, String memo) {
+        String insertOutfitSql = "INSERT INTO outfits (name, start_date, memo) VALUES (?, ?, ?)";
         String insertMappingSql = "INSERT INTO outfit_clothes (outfit_id, cloth_id) VALUES (?, ?)";
 
         try (Connection connection = DatabaseUtil.getConnection();
@@ -134,6 +135,7 @@ public class ClothRepository {
             // outfits 테이블에 추가
             outfitStatement.setString(1, outfitName);
             outfitStatement.setString(2, startDate); // 날짜 저장
+            outfitStatement.setString(3, memo); // 메모 저장
             outfitStatement.executeUpdate();
 
             // 생성된 코디 ID 가져오기
@@ -157,6 +159,7 @@ public class ClothRepository {
         }
     }
 
+
     // ID로 특정 옷 삭제
     public void deleteClothById(int id) {
         String sql = "DELETE FROM clothes WHERE id = ?";
@@ -177,7 +180,8 @@ public class ClothRepository {
     // 코디 조회
     public List<Map<String, Object>> getAllOutfits() {
         String sql = """
-        SELECT o.id AS outfit_id, o.name AS outfit_name, o.start_date, c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
+        SELECT o.id AS outfit_id, o.name AS outfit_name, o.start_date, o.memo, 
+               c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
         FROM outfits o
         JOIN outfit_clothes oc ON o.id = oc.outfit_id
         JOIN clothes c ON oc.cloth_id = c.id
@@ -194,13 +198,13 @@ public class ClothRepository {
                 Map<String, Object> outfit = new HashMap<>();
                 outfit.put("outfit_id", resultSet.getInt("outfit_id"));
                 outfit.put("outfit_name", resultSet.getString("outfit_name"));
-                outfit.put("start_date", resultSet.getDate("start_date")); // 날짜 반환
+                outfit.put("start_date", resultSet.getDate("start_date"));
+                outfit.put("memo", resultSet.getString("memo")); // 메모 추가
                 outfit.put("cloth_id", resultSet.getInt("cloth_id"));
                 outfit.put("cloth_name", resultSet.getString("cloth_name"));
                 outfit.put("imageUrl", resultSet.getString("imageUrl"));
                 outfits.add(outfit);
             }
-
         } catch (SQLException e) {
             System.out.println("코디 조회 실패: " + e.getMessage());
             e.printStackTrace();
@@ -208,6 +212,7 @@ public class ClothRepository {
 
         return outfits;
     }
+
     public List<Map<String, Object>> getOutfitsByDate(String date) {
         List<Map<String, Object>> outfits = new ArrayList<>();
 

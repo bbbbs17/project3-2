@@ -32,6 +32,12 @@
             <input type="date" id="startDate" name="startDate" class="form-control" required>
         </div>
 
+        <!-- 메모 입력 -->
+        <div class="mb-3">
+            <label for="memo" class="form-label">메모</label>
+            <textarea id="memo" name="memo" class="form-control" rows="4" placeholder="코디와 관련된 메모를 입력하세요."></textarea>
+        </div>
+
         <!-- 옷 선택 -->
         <h3 class="mb-3">옷 선택</h3>
         <div class="row">

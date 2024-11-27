@@ -100,6 +100,7 @@
                 <%
                     for (Map<String, Object> outfit : outfits) {
                         String outfitName = (String) outfit.get("outfit_name");
+                        String memo = (String) outfit.get("memo"); // 메모 데이터 추가
                         java.sql.Date startDate = (java.sql.Date) outfit.get("start_date");
 
                         // 중복 제거: 이미 추가된 날짜는 건너뛰기
@@ -108,13 +109,53 @@
                 %>
                 {
                     title: "<%= outfitName %>",
-                    start: "<%= startDate.toString() %>"
+                    start: "<%= startDate.toString() %>",
+                    extendedProps: {
+                        memo: "<%= memo %>" // 메모 추가
+                    }
                 },
                 <%
                         }
                     }
                 %>
             ],
+            // 마우스 오버 시 메모 표시
+            eventMouseEnter: function (info) {
+                const memo = info.event.extendedProps.memo || "메모가 없습니다.";
+                const tooltip = document.createElement('div');
+                tooltip.id = 'event-tooltip';
+                tooltip.style.position = 'fixed';
+                tooltip.style.top = '50%';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+                tooltip.style.backgroundColor = '#fff';
+                tooltip.style.border = '1px solid #ccc';
+                tooltip.style.padding = '20px';
+                tooltip.style.boxShadow = '0px 4px 10px rgba(0, 0, 0, 0.3)';
+                tooltip.style.borderRadius = '10px';
+                tooltip.style.zIndex = 1000;
+                tooltip.style.animation = 'fadeIn 0.3s ease-in-out';
+                tooltip.innerText = memo;
+
+                // 팝업 스타일 개선
+                tooltip.style.fontSize = '16px';
+                tooltip.style.color = '#333';
+                tooltip.style.textAlign = 'center';
+                tooltip.style.maxWidth = '300px';
+
+                document.body.appendChild(tooltip);
+
+                // 마우스를 움직이면 팝업 위치 변경 (비활성화)
+                document.addEventListener('mousemove', function (e) {}, { once: true });
+            },
+            // 마우스가 이벤트에서 떠날 때 팝업 제거
+            eventMouseLeave: function () {
+                const tooltip = document.getElementById('event-tooltip');
+                if (tooltip) {
+                    tooltip.remove();
+                }
+            },
+            // 기존 클릭 이벤트 복원
             eventClick: function (info) {
                 console.log('Event clicked:', info);
 
@@ -148,8 +189,23 @@
 
         calendar.render();
     });
-</script>
 
+    // CSS 애니메이션 추가
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
 
 </body>
 </html>

@@ -17,9 +17,11 @@ public class SaveOutfitServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("Access-Control-Allow-Origin", "*");
+
         String outfitName = request.getParameter("outfitName");
         String[] selectedClothes = request.getParameterValues("selectedClothes");
         String startDate = request.getParameter("startDate");
+        String memo = request.getParameter("memo"); // 메모 파라미터 추가
 
         // 입력값 검증
         if (outfitName == null || startDate == null || selectedClothes == null) {
@@ -41,7 +43,7 @@ public class SaveOutfitServlet extends HttpServlet {
 
         try {
             ClothRepository clothRepository = ClothRepository.getInstance();
-            clothRepository.addOutfit(outfitName, clothIdList, startDate); // startDate 추가
+            clothRepository.addOutfit(outfitName, clothIdList, startDate, memo); // 메모 추가
 
             // 성공적으로 저장되었을 때 리다이렉트
             response.sendRedirect("myOutfits.jsp");
