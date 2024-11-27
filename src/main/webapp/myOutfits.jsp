@@ -2,6 +2,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="dao.ClothRepository" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.HashSet" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,6 +74,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.js"></script>
+<%
+    // 중복 제거를 위한 Set 사용
+    Set<String> uniqueDates = new HashSet<>();
+%>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
@@ -90,17 +96,22 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             events: [
-                <%-- JSP에서 데이터베이스에서 가져온 이벤트 데이터 추가 --%>
+                <%-- JSP에서 중복된 날짜 제거 --%>
                 <%
                     for (Map<String, Object> outfit : outfits) {
                         String outfitName = (String) outfit.get("outfit_name");
                         java.sql.Date startDate = (java.sql.Date) outfit.get("start_date");
+
+                        // 중복 제거: 이미 추가된 날짜는 건너뛰기
+                        if (startDate != null && !uniqueDates.contains(startDate.toString())) {
+                            uniqueDates.add(startDate.toString());
                 %>
                 {
                     title: "<%= outfitName %>",
-                    start: "<%= startDate != null ? startDate.toString() : "" %>"
+                    start: "<%= startDate.toString() %>"
                 },
                 <%
+                        }
                     }
                 %>
             ],
@@ -137,9 +148,8 @@
 
         calendar.render();
     });
-
-
 </script>
+
 
 </body>
 </html>
