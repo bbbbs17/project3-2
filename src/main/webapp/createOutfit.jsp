@@ -70,7 +70,7 @@
                     }
                 }
             %>
-        </div>
+        </div
 
         <!-- 저장 버튼 -->
         <button type="submit" class="btn btn-success btn-lg">코디 저장</button>

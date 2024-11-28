@@ -177,6 +177,7 @@ public class ClothRepository {
     }
 
 
+
     // 코디 조회
     public List<Map<String, Object>> getAllOutfits() {
         String sql = """
@@ -212,6 +213,104 @@ public class ClothRepository {
 
         return outfits;
     }
+    public Map<String, Object> getOutfitById(int outfitId) {
+        String sql = """
+        SELECT o.id AS outfit_id, o.name AS outfit_name, o.start_date, o.memo, 
+               c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
+        FROM outfits o
+        LEFT JOIN outfit_clothes oc ON o.id = oc.outfit_id
+        LEFT JOIN clothes c ON oc.cloth_id = c.id
+        WHERE o.id = ?
+        """;
+
+        Map<String, Object> outfit = new HashMap<>();
+        List<Map<String, Object>> clothes = new ArrayList<>();
+
+        try (Connection connection = DatabaseUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, outfitId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // 코디 기본 정보
+                    if (outfit.isEmpty()) {
+                        outfit.put("outfit_id", resultSet.getInt("outfit_id"));
+                        outfit.put("outfit_name", resultSet.getString("outfit_name"));
+                        outfit.put("start_date", resultSet.getDate("start_date").toString());
+                        outfit.put("memo", resultSet.getString("memo"));
+                    }
+
+                    // 옷 정보 추가
+                    Map<String, Object> cloth = new HashMap<>();
+                    cloth.put("cloth_id", resultSet.getInt("cloth_id"));
+                    cloth.put("cloth_name", resultSet.getString("cloth_name"));
+                    cloth.put("imageUrl", resultSet.getString("imageUrl"));
+                    clothes.add(cloth);
+                }
+            }
+
+            // 코디에 속한 옷 목록 추가
+            outfit.put("clothes", clothes);
+
+        } catch (SQLException e) {
+            System.out.println("코디 조회 실패 (outfitId: " + outfitId + "): " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return outfit;
+    }
+    public boolean updateOutfit(int outfitId, String name, List<Integer> clothIds, String date, String memo) {
+        String updateOutfitSql = "UPDATE outfits SET name = ?, start_date = ?, memo = ? WHERE id = ?";
+        String deleteMappingsSql = "DELETE FROM outfit_clothes WHERE outfit_id = ?";
+        String insertMappingSql = "INSERT INTO outfit_clothes (outfit_id, cloth_id) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            conn.setAutoCommit(false);
+
+            // 1. 코디 정보 업데이트
+            try (PreparedStatement ps = conn.prepareStatement(updateOutfitSql)) {
+                ps.setString(1, name);
+                ps.setString(2, date);
+                ps.setString(3, memo);
+                ps.setInt(4, outfitId);
+                ps.executeUpdate();
+            }
+
+            // 2. 기존 옷 연결 삭제
+            try (PreparedStatement ps = conn.prepareStatement(deleteMappingsSql)) {
+                ps.setInt(1, outfitId);
+                ps.executeUpdate();
+            }
+
+            // 3. 새로운 옷 연결 추가
+            try (PreparedStatement ps = conn.prepareStatement(insertMappingSql)) {
+                for (int clothId : clothIds) {
+                    ps.setInt(1, outfitId);
+                    ps.setInt(2, clothId);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
     public List<Map<String, Object>> getOutfitsByDate(String date) {
         List<Map<String, Object>> outfits = new ArrayList<>();
@@ -223,7 +322,8 @@ public class ClothRepository {
         }
 
         String sql = """
-        SELECT o.id AS outfit_id, o.name AS outfit_name, c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
+        SELECT o.id AS outfit_id, o.name AS outfit_name, o.start_date, o.memo, 
+               c.id AS cloth_id, c.name AS cloth_name, c.imageUrl
         FROM outfits o
         JOIN outfit_clothes oc ON o.id = oc.outfit_id
         JOIN clothes c ON oc.cloth_id = c.id
@@ -239,6 +339,8 @@ public class ClothRepository {
                     Map<String, Object> outfit = new HashMap<>();
                     outfit.put("outfit_id", resultSet.getInt("outfit_id"));
                     outfit.put("outfit_name", resultSet.getString("outfit_name"));
+                    outfit.put("start_date", resultSet.getString("start_date")); // 날짜 추가
+                    outfit.put("memo", resultSet.getString("memo")); // 메모 추가
                     outfit.put("cloth_id", resultSet.getInt("cloth_id"));
                     outfit.put("cloth_name", resultSet.getString("cloth_name"));
                     outfit.put("imageUrl", resultSet.getString("imageUrl"));
@@ -252,6 +354,7 @@ public class ClothRepository {
 
         return outfits;
     }
+
 
 
 

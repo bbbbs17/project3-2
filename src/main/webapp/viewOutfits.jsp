@@ -124,6 +124,33 @@
                 선택된 코디 삭제
             </button>
         </form>
+        <form action="editOutfit.jsp" method="post" class="d-inline">
+            <!-- 수정: date 값을 히든 필드로 추가 -->
+            <input type="hidden" name="date" value="<%= selectedDate %>">
+            <%
+                // 첫 번째 outfitId를 히든 필드로 전송
+                for (Map<String, Object> outfit : outfits) {
+                    Object idObject = outfit.get("outfit_id");
+
+                    if (idObject != null) {
+                        int outfitId = (int) idObject;
+
+                        // 중복된 ID를 무시
+                        if (!uniqueOutfitIds.contains(outfitId)) {
+                            uniqueOutfitIds.add(outfitId);
+            %>
+            <!-- hidden 필드로 outfitId 전송 -->
+            <input type="hidden" name="outfitId" value="<%= outfitId %>">
+            <%
+                            break; // 첫 번째 ID만 사용하고 반복문 종료
+                        }
+                    }
+                }
+            %>
+            <button type="submit" class="btn btn-primary btn-lg mt-3">
+                선택된 코디 수정
+            </button>
+        </form>
     </div>
     <%
             }
