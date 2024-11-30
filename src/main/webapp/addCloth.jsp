@@ -47,7 +47,7 @@
                     <div class="invalid-feedback">이름을 입력해주세요.</div>
                 </div>
                 <div class="mb-3">
-                    <label for="category" class="form-label">카테고리</label>
+                    <label for="category" class="form-label">카테고리(신발의 경우 악세사리로 등록해주세요-size free)</label>
                     <select id="category" name="category" class="form-select" onchange="updateSizeOptions()" required>
                         <option value="상의" selected>상의</option>
                         <option value="하의">하의</option>

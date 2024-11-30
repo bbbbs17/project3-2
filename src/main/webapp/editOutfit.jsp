@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .card-img-top {
-            object-fit: cover;
+            object-fit: contain;  /* 이미지 비율 유지 */
             width: 100%;
             height: 200px;
         }
@@ -126,7 +126,6 @@
         <!-- 저장 버튼 -->
         <button type="submit" class="btn btn-primary btn-lg">코디 저장</button>
     </form>
-
 
     <%
             }

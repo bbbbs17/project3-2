@@ -9,7 +9,7 @@
     <title>코디 생성</title>
     <style>
         .card-img-top {
-            object-fit: cover;
+            object-fit: contain;  /* 이미지 비율 유지하면서 크기 조정 */
             width: 100%;
             height: 200px;
         }
@@ -38,6 +38,19 @@
             <textarea id="memo" name="memo" class="form-control" rows="4" placeholder="코디와 관련된 메모를 입력하세요."></textarea>
         </div>
 
+        <!-- 카테고리 선택 -->
+        <div class="mb-3">
+            <label for="category" class="form-label">카테고리 선택</label>
+            <select id="category" name="category" class="form-control" onchange="filterClothes()">
+                <option value="">모든 카테고리</option>
+                <option value="상의">상의</option>
+                <option value="하의">하의</option>
+                <option value="아우터">아우터</option>
+                <option value="신발">신발</option>
+                <!-- 다른 카테고리 추가 가능 -->
+            </select>
+        </div>
+
         <!-- 옷 선택 -->
         <h3 class="mb-3">옷 선택</h3>
         <div class="row">
@@ -55,7 +68,7 @@
                 // 옷 목록 출력
                 for (Cloth cloth : clothes) {
             %>
-            <div class="col-md-4">
+            <div class="col-md-4 cloth-item" data-category="<%= cloth.getCategory() %>">
                 <div class="card mb-3">
                     <!-- 옷 이미지 -->
                     <img src="<%= request.getContextPath() + '/' + cloth.getImageUrl() %>" class="card-img-top" alt="옷 이미지">
@@ -70,11 +83,31 @@
                     }
                 }
             %>
-        </div
+        </div> <!-- 닫히지 않은 div 추가 -->
 
         <!-- 저장 버튼 -->
-        <button type="submit" class="btn btn-success btn-lg">코디 저장</button>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg">코디 저장</button>
+        </div>
     </form>
 </div>
+
+<!-- JavaScript -->
+<script>
+    function filterClothes() {
+        const category = document.getElementById("category").value;  // 선택된 카테고리
+        const clothesDivs = document.querySelectorAll(".cloth-item"); // 모든 옷 항목
+
+        clothesDivs.forEach(function (div) {
+            const clothCategory = div.getAttribute("data-category");  // 각 옷의 카테고리
+            if (category === "" || category === clothCategory) {
+                div.style.display = "block";  // 선택된 카테고리일 경우 보이게
+            } else {
+                div.style.display = "none";   // 아니면 숨김
+            }
+        });
+    }
+</script>
+
 </body>
 </html>

@@ -12,10 +12,10 @@
     <style>
         /* 기존 스타일은 유지 */
         .card-img-top {
-            object-fit: cover;
-            width: 100%;
-            height: 250px; /* 이미지를 크게 보이게 */
-            border-radius: 10px;
+            object-fit: contain;  /* 비율을 유지하면서 이미지 크기 조정 */
+            width: 100%;  /* 카드 너비에 맞게 이미지 너비 확장 */
+            max-height: 250px;  /* 최대 높이 제한 */
+            height: auto;  /* 높이를 자동으로 조정하여 비율 유지 */
         }
 
         .card {
@@ -158,7 +158,7 @@
             position: absolute;
             top: 5px;
             right: 5px;
-            background: rgba(255, 0, 0, 0.8);
+            background: #343a40;
             color: white;
             border: none;
             border-radius: 50%;
@@ -238,6 +238,10 @@
     <div class="canvas-container">
         <canvas id="outfitCanvas" width="600" height="800"></canvas> <!-- 캔버스 크기 고정 -->
     </div>
+    <!-- 다운로드 버튼 추가 -->
+    <div class="controls-section text-center">
+        <button class="btn" style="background-color: #F1F1F1; color: #333; border: 1px solid #ccc; font-size: 1.25rem; padding: 12px 30px; border-radius: 30px;" onclick="downloadCanvas()">이미지 다운로드</button>
+    </div>
 
     <!-- 추가된 이미지 삭제 버튼 목록 -->
     <div class="added-images-container">
@@ -298,9 +302,10 @@
                     }
                 }
             %>
-            <button type="submit" class="btn btn-danger btn-lg mt-3" onclick="return confirm('선택된 코디를 정말 삭제하시겠습니까?');">
+            <button type="submit" class="btn" style="background-color: #1D2D50; color: white; border: none; font-size: 1.2rem;" onclick="return confirm('선택된 코디를 정말 삭제하시겠습니까?');">
                 선택된 코디 삭제
             </button>
+
         </form>
         <form action="editOutfit.jsp" method="post" class="d-inline">
             <!-- 수정: date 값을 히든 필드로 추가 -->
@@ -323,9 +328,10 @@
                     }
                 }
             %>
-            <button type="submit" class="btn btn-primary btn-lg mt-3">
+            <button type="submit" class="btn" style="background-color: #F1F1F1; color: #333; border: 1px solid #ccc; font-size: 1.2rem;">
                 선택된 코디 수정
             </button>
+
         </form>
     </div>
 
@@ -418,6 +424,18 @@
         imageItem.appendChild(deleteBtn);
         addedImagesList.appendChild(imageItem);
     }
+    // 캔버스 이미지를 다운로드하는 함수
+    function downloadCanvas() {
+        const canvas = document.getElementById('outfitCanvas');
+        const imageUrl = canvas.toDataURL('image/png'); // 캔버스 내용을 PNG로 변환
+
+        // 링크를 만들어 다운로드 기능을 구현
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'outfit_design.png'; // 다운로드할 파일 이름 지정
+        link.click(); // 링크 클릭하여 다운로드 시작
+    }
+
 
     // 추가된 이미지를 삭제하는 함수
     function deleteAddedImage(imageId) {

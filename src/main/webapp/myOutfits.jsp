@@ -11,22 +11,70 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.css" rel="stylesheet">
     <style>
-        #calendar {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
+        body {
+            background-color: #f4f4f4; /* 연한 회색 배경 */
+            font-family: 'Arial', sans-serif;
+            color: #333; /* 어두운 회색 텍스트 */
         }
+
+        h1, h2, h3 {
+            color: #222; /* 더 어두운 텍스트 색상 */
+        }
+
         .card-img-top {
             object-fit: cover;
             width: 100%;
             height: 200px;
         }
+
         .outfit-card {
             border: 1px solid #ddd;
             border-radius: 10px;
             padding: 15px;
-            background-color: #f9f9f9;
+            background-color: #ffffff; /* 하얀 배경 */
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background-color: #333; /* 어두운 회색 버튼 */
+            color: white;
+            border: none;
+            font-size: 1rem;
+            border-radius: 5px;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #555; /* 호버 시 밝은 회색으로 변경 */
+        }
+
+        .btn-lg {
+            font-size: 1.25rem;
+        }
+
+        #calendar {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .d-flex.justify-content-between {
+            margin-bottom: 40px;
+        }
+
+        .text-muted {
+            color: #777; /* 흐린 텍스트 색상 */
+        }
+
+        .btn-secondary {
+            background-color: #222; /* 어두운 회색 배경 */
+            border-color: #444; /* 버튼 경계색 */
+        }
+
+        .btn-secondary:hover {
+            background-color: #444; /* 호버 시 버튼 색상 변화 */
         }
     </style>
 </head>
